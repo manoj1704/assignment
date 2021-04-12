@@ -15,10 +15,14 @@ class FetchTweets:
         username = req.get_param('username')
         name = req.get_param('name')
         text = req.get_param('text')
-        start = (page - 1) * limit
+        start = max((page - 1) * limit, 0)
 
         if limit > 10000:
             resp.text = 'Page Size exceeded'
+            resp.status = falcon.HTTP_400
+            return
+        if page * limit > 10000:
+            resp.text = 'Request window too large'
             resp.status = falcon.HTTP_400
             return
 
